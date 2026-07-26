@@ -1,6 +1,7 @@
 import { getLowStockProducts } from "../tools/inventory.tool";
 import { tools } from "../tools/tool.registry";
 import { askAI } from "./ai.service";
+import { saveChatHistory } from "./chat-history.services";
 
 
 function selectTool(message: string) {
@@ -83,11 +84,15 @@ export async function processAssistantMessage(
 ) {
 
     let businessData: any = null;
+    let usedTool:string | undefined;
 
     const selectedTool =
         selectTool(message);
 
     if (selectedTool) {
+        usedTool =
+            selectedTool.name;
+
         businessData =
             await selectedTool.execute();
     }
@@ -111,8 +116,29 @@ export async function processAssistantMessage(
     
     ${JSON.stringify(businessData, null, 2)}`;
 
-    return await askAI(
-        systemPromt,
-        userPrompt
-    )
+    // return await askAI(
+    //     systemPromt,
+    //     userPrompt
+    // )
+
+    const answer =
+        await askAI(
+            systemPromt,
+            userPrompt
+        );
+
+
+
+    if(answer){
+
+        await saveChatHistory(
+            message,
+            answer,
+            usedTool
+        );
+
+    }
+
+
+    return answer;
 }

@@ -7,7 +7,7 @@ export async function getDashboardData() {
                 (SELECT COUNT(*) FROM products) AS total_products,
                 (SELECT COUNT(*) FROM customers) AS total_customers,
                 (SELECT COUNT(*) FROM sales_orders) AS total_orders,
-                (SELECT SUM(total_amount) FROM sales_order AS total_sales )
+                (SELECT SUM(total_amount) FROM sales_orders AS total_sales )
         `
     );
 

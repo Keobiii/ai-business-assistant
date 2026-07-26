@@ -8,6 +8,8 @@ import { getProductCount, getProductList } from "./product.tool";
 export const tools = {
 
     inventory_low_stock: {
+        name:
+            "inventory_low_stock",
 
         description:
             "Get products that are below minimum stock level",
@@ -17,6 +19,8 @@ export const tools = {
     },
 
     dashboard_summary: {
+        name:
+            "dashboard_summary",
 
         description:
             "Get overall business summary",
@@ -26,6 +30,9 @@ export const tools = {
     },
 
     customer_count: {
+        name:
+            "customer_count",
+
         description:
             "Get total number of customers",
         
@@ -34,6 +41,9 @@ export const tools = {
     },
 
     customer_top: {
+        name:
+            "customer_top",
+
         description:
             "Get customers with the highest purchase amount",
             
@@ -42,6 +52,9 @@ export const tools = {
     },
 
     sales_summary: {
+        name:
+            "sales_summary",
+
         description: 
             "Get total sales and order information",
         
@@ -50,6 +63,9 @@ export const tools = {
     },
 
     product_count: {
+        name:
+            "product_count",
+            
         description: 
             "Get total number of products",
 
@@ -58,6 +74,9 @@ export const tools = {
     },
 
     product_list: {
+        name:
+            "product_list",
+            
         description: 
             "Get product information",
 

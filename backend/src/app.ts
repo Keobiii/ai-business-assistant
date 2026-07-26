@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 
 import assistantRoutes from "./routes/assistant.routes";
+import historyRoutes from "./routes/history.routes";
 
 const app = express();
 
@@ -12,6 +13,11 @@ app.use(express.json());
 app.use(
     "/api/assistant",
     assistantRoutes
+);
+
+app.use(
+    "/api/history",
+    historyRoutes
 );
 
 app.get("/", (req,res)=>{
