@@ -1,8 +1,86 @@
 import UserMessage from "./components/UserMessage";
 import AIResponse from "./components/AIResponse";
+import { use, useEffect, useState } from "react";
+import { sendAssistantMessage } from "../../api/assistant.api";
+import { getChatHistory } from "../../api/history.api";
 
 
-export default function Assistant(){
+interface Message {
+    role: "user" | "assistant";
+    content: string;
+}
+
+
+
+export default function Assistant() {
+    const [messages, setMessages] = useState<Message[]>([]);
+    const [input, setInput] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        async function loadHistory() {
+            const result = 
+                await getChatHistory();
+
+            if (result.success) {
+                const formatted = 
+                    result.data.flatMap(
+                        (item: any) => [
+                            {
+                                role: "user",
+                                content: item.user_message
+                            },
+                            {
+                                role: "assistant",
+                                content: item.ai_response
+                            }
+                        ]
+                    );
+                setMessages(formatted);
+            }
+        }
+
+        loadHistory();
+    }, []);
+
+    async function handleSend() {
+        if (!input.trim()) return;
+
+        const userMessage = input;
+
+        setMessages(prev=>[
+            ...prev,
+            {
+                role:"user",
+                content:userMessage
+            }
+        ]);
+
+        setInput("");
+        setLoading(true);
+
+        try {
+            const response = await sendAssistantMessage(userMessage);
+
+            setMessages(prev=>[
+                ...prev,
+                {
+                    role:"assistant",
+                    content: response.answer
+                }
+            ]);
+        } catch (error) {
+            setMessages(prev=>[
+                ...prev,
+                {
+                    role:"assistant",
+                    content: "Something went wrong."
+                }
+            ]);
+        }
+
+        setLoading(false);
+    }
 
     return (
 
@@ -49,27 +127,31 @@ export default function Assistant(){
                 "
             >
 
-                <AIResponse
-                    message="
-                    Hello! I can help you analyze your business data.
-                    You can ask about sales, inventory, customers, and reports.
-                    "
-                />
+               {
+                    messages.map(
+                        (message, index) => (
+                            message.role === "assistant" ? (
+                                <AIResponse
+                                    key={index}
+                                    message={message.content}/>
+                            ) : (
+                                <UserMessage
+                                    key={index}
+                                    message={message.content}/>
+                            )
+                        )
+                    )
 
+               }
 
-                <UserMessage
-                    message="
-                    Which products are running low?
-                    "
-                />
+               {
 
+                    loading && (
+                        <AIResponse
+                            message="AI is thinking..."/>
+                    )
 
-                <AIResponse
-                    message="
-                    Based on the current inventory, 3 products are below the minimum stock level.
-                    I recommend creating a purchase order for these items.
-                    "
-                />
+               }
 
 
             </div>
@@ -98,10 +180,22 @@ export default function Assistant(){
                         focus:ring-2
                         focus:ring-blue-500
                     "
+                    value={input}
+                    onChange={
+                        (e) => setInput(e.target.value)
+                    }
+                    onKeyDown={
+                        (e) => {
+                            if (e.key === "Enter") {
+                                handleSend();
+                            }
+                        }
+                    }
                 />
 
 
                 <button
+                    onClick={handleSend}
                     className="
                         bg-blue-600
                         text-white
