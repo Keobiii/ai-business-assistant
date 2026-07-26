@@ -1,0 +1,30 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
+
+export const PORT =
+    process.env.PORT || 5050;
+
+
+export const DB_HOST =
+    process.env.DB_HOST || "localhost";
+
+
+export const DB_USER =
+    process.env.DB_USER || "root";
+
+
+export const DB_PASSWORD =
+    process.env.DB_PASSWORD || "";
+
+
+export const DB_NAME =
+    process.env.DB_NAME || "ai_business";
+
+
+export const DB_PORT =
+    process.env.DB_PORT || "3306";
+
+export const GROQ_API_KEY =
+    process.env.GROQ_API_KEY || "";
