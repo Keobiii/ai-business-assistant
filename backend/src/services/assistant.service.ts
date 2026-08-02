@@ -3,23 +3,86 @@ import { tools } from "../tools/tool.registry";
 import { askAI } from "./ai.service";
 import { saveChatHistory } from "./chat-history.services";
 
+type SelectedTool = {
+    tool: any;
+    params: any[];
+};
 
-function selectTool(message: string) {
+function extractCode(
+    message: string,
+    prefix: string
+): string | null {
 
-    const text = message.toLowerCase();
+    const regex =
+        new RegExp(`${prefix}-\\d+`, "i");
 
+    const match =
+        message.match(regex);
+
+
+    if (!match) {
+        return null;
+    }
+
+
+    return match[0].toUpperCase();
+}
+
+function selectTool(
+    message: string
+): SelectedTool | null {
+
+    const text =
+        message.toLowerCase();
+
+
+    // =====================================
+    // INVENTORY LIST
+    // =====================================
 
     if (
-        text.includes("stock") ||
-        text.includes("inventory") ||
-        text.includes("restock") ||
-        text.includes("reorder")
+        text.includes("inventory list") ||
+        text.includes("inventory information") ||
+        text.includes("list of inventory")
     ) {
 
-        return tools.inventory_low_stock;
+        return {
+            tool:
+                tools.inventory_list,
+
+            params:
+                []
+        };
 
     }
 
+
+    // =====================================
+    // LOW STOCK / INVENTORY
+    // =====================================
+
+    if (
+        text.includes("low stock") ||
+        text.includes("stock") ||
+        text.includes("restock") ||
+        text.includes("reorder") ||
+        text.includes("inventory")
+    ) {
+
+        return {
+            tool:
+                tools.inventory_low_stock,
+
+            params:
+                []
+        };
+
+    }
+
+
+    // =====================================
+    // BUSINESS
+    // =====================================
 
     if (
         text.includes("business") ||
@@ -28,20 +91,20 @@ function selectTool(message: string) {
         text.includes("performance")
     ) {
 
-        return tools.dashboard_summary;
+        return {
+            tool:
+                tools.dashboard_summary,
+
+            params:
+                []
+        };
 
     }
 
 
-    if (
-        text.includes("customer") ||
-        text.includes("client")
-    ) {
-
-        return tools.customer_count;
-
-    }
-
+    // =====================================
+    // TOP CUSTOMER
+    // =====================================
 
     if (
         text.includes("top customer") ||
@@ -49,10 +112,127 @@ function selectTool(message: string) {
         text.includes("highest customer")
     ) {
 
-        return tools.customer_top;
+        return {
+            tool:
+                tools.customer_top,
+
+            params:
+                []
+        };
 
     }
 
+
+    // =====================================
+    // CUSTOMER DETAILS
+    // =====================================
+
+    const customerCode =
+        extractCode(message, "CUST");
+
+
+    if (customerCode) {
+
+        return {
+            tool:
+                tools.customer_details,
+
+            params:
+                [customerCode]
+        };
+
+    }
+
+
+    // =====================================
+    // CUSTOMER LIST
+    // =====================================
+
+    if (
+        text.includes("customer list") ||
+        text.includes("customer information") ||
+        text.includes("list of customers")
+    ) {
+
+        return {
+            tool:
+                tools.customer_list,
+
+            params:
+                []
+        };
+
+    }
+
+
+    // =====================================
+    // CUSTOMER COUNT
+    // =====================================
+
+    if (
+        text.includes("how many customers") ||
+        text.includes("number of customers") ||
+        text.includes("total customers") ||
+        text.includes("customer count")
+    ) {
+
+        return {
+            tool:
+                tools.customer_count,
+
+            params:
+                []
+        };
+
+    }
+
+
+    // =====================================
+    // SALES ORDER DETAILS
+    // =====================================
+
+    const salesOrderNumber =
+        extractCode(message, "SO");
+
+
+    if (salesOrderNumber) {
+
+        return {
+            tool:
+                tools.sales_order_details,
+
+            params:
+                [salesOrderNumber]
+        };
+
+    }
+
+
+    // =====================================
+    // SALES ORDERS
+    // =====================================
+
+    if (
+        text.includes("sales order list") ||
+        text.includes("sales orders") ||
+        text.includes("sales order information") ||
+        text.includes("list of sales orders")
+    ) {
+
+        return {
+            tool:
+                tools.sales_orders,
+
+            params:
+                []
+        };
+
+    }
+
+
+    // =====================================
+    // SALES SUMMARY
+    // =====================================
 
     if (
         text.includes("sales") ||
@@ -60,41 +240,109 @@ function selectTool(message: string) {
         text.includes("income")
     ) {
 
-        return tools.sales_summary;
+        return {
+            tool:
+                tools.sales_summary,
+
+            params:
+                []
+        };
 
     }
 
 
+    // =====================================
+    // PRODUCT DETAILS
+    // =====================================
+
+    const productCode =
+        extractCode(message, "PRD");
+
+
+    if (productCode) {
+
+        return {
+            tool:
+                tools.product_details,
+
+            params:
+                [productCode]
+        };
+
+    }
+
+
+    // =====================================
+    // PRODUCT LIST
+    // =====================================
+
     if (
-        text.includes("product") ||
+        text.includes("product list") ||
+        text.includes("product information") ||
+        text.includes("list of products") ||
+        text.includes("products") ||
         text.includes("items")
     ) {
 
-        return tools.product_count;
+        return {
+            tool:
+                tools.product_list,
+
+            params:
+                []
+        };
+
+    }
+
+
+    // =====================================
+    // PRODUCT COUNT
+    // =====================================
+
+    if (
+        text.includes("how many products") ||
+        text.includes("number of products") ||
+        text.includes("total products") ||
+        text.includes("product count")
+    ) {
+
+        return {
+            tool:
+                tools.product_count,
+
+            params:
+                []
+        };
 
     }
 
 
     return null;
-
 }
+
 
 export async function processAssistantMessage(
     message: string
 ) {
 
     let businessData: any = null;
-    let usedTool:string | undefined;
+    let usedTool: string | undefined;
 
     const selectedTool =
         selectTool(message);
 
+
     if (selectedTool) {
+
         usedTool =
-            selectedTool.name;
+            selectedTool.tool.name;
+
 
         businessData =
-            await selectedTool.execute();
+            await selectedTool.tool.execute(
+                ...Object.values(selectedTool.params ?? {})
+            );
+
     }
 
 
@@ -116,11 +364,6 @@ export async function processAssistantMessage(
     
     ${JSON.stringify(businessData, null, 2)}`;
 
-    // return await askAI(
-    //     systemPromt,
-    //     userPrompt
-    // )
-
     const answer =
         await askAI(
             systemPromt,
@@ -129,7 +372,7 @@ export async function processAssistantMessage(
 
 
 
-    if(answer){
+    if (answer) {
 
         await saveChatHistory(
             message,

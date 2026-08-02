@@ -1,8 +1,8 @@
-import { getLowStockProducts } from "./inventory.tool";
+import { getInventoryList, getLowStockProducts } from "./inventory.tool";
 import { getDashboardData } from "./dashboard.tool";
-import { getCustomerCount, getTopCustomers } from "./customer.tool";
-import { getSalesSummary } from "./sales.tool";
-import { getProductCount, getProductList } from "./product.tool";
+import { getCustomerCount, getCustomerDetails, getCustomerList, getTopCustomers } from "./customer.tool";
+import { getSalesOrderDetails, getSalesOrders, getSalesSummary } from "./sales.tool";
+import { getProductCount, getProductList, getProductDetails } from "./product.tool";
 
 
 export const tools = {
@@ -16,6 +16,17 @@ export const tools = {
 
         execute:
             getLowStockProducts
+    },
+
+    inventory_list: {
+        name:
+            "inventory_list",
+
+        description:
+            "Get inventory information including product code, name, quantity, and minimum stock level",
+
+        execute:
+            getInventoryList
     },
 
     dashboard_summary: {
@@ -35,9 +46,20 @@ export const tools = {
 
         description:
             "Get total number of customers",
-        
+
         execute:
             getCustomerCount
+    },
+
+    customer_list: {
+        name:
+            "customer_list",
+
+        description:
+            "Get customer information",
+
+        execute:
+            getCustomerList
     },
 
     customer_top: {
@@ -46,27 +68,61 @@ export const tools = {
 
         description:
             "Get customers with the highest purchase amount",
-            
-        execute: 
+
+        execute:
             getTopCustomers
+    },
+
+    customer_details: {
+        name:
+            "customer_details",
+
+        description:
+            "Get detailed information about a specific customer including customer code, name, email, phone, and address",
+
+        execute:
+            getCustomerDetails
     },
 
     sales_summary: {
         name:
             "sales_summary",
 
-        description: 
+        description:
             "Get total sales and order information",
-        
-        execute: 
+
+        execute:
             getSalesSummary
     },
 
+    sales_orders: {
+        name:
+            "sales_orders",
+
+        description:
+            "Get sales order information including order number, customer code, customer name, total amount, and order date",
+
+        execute:
+            getSalesOrders
+    },
+
+    sales_order_details: {
+        name:
+            "sales_order_details",
+
+        description:
+            "Get detailed information about a specific sales order including order number, customer code, customer name, customer email, customer phone, customer address, total amount, and order date",
+
+        execute:
+            getSalesOrderDetails
+    },
+
+    // Product related tools
     product_count: {
         name:
             "product_count",
-            
-        description: 
+
+        description:
             "Get total number of products",
 
         execute:
@@ -76,12 +132,24 @@ export const tools = {
     product_list: {
         name:
             "product_list",
-            
-        description: 
+
+        description:
             "Get product information",
 
         execute:
             getProductList
+    },
+
+    product_details: {
+
+        name:
+            "product_details",
+
+        description:
+            "Get detailed information about a specific product including product code, name, description, brand, category, and price",
+
+        execute:
+            getProductDetails
     }
 
 };
