@@ -7,6 +7,7 @@ import {
 import Assistant from "../pages/assistant/Assistant";
 import MainLayout from "../components/layout/Mainlayout";
 import Dashboard from "../pages/dashboard/Dashoard";
+import Inventory from "../pages/inventory/Inventory";
 
 
 
@@ -29,6 +30,11 @@ export default function AppRoutes(){
                     <Route 
                         path="/assistant" 
                         element={<Assistant/>}
+                    />
+
+                    <Route 
+                        path="/inventory" 
+                        element={<Inventory/>}
                     />
 
                 </Routes>
