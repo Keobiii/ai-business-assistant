@@ -3,6 +3,7 @@ import cors from "cors";
 
 import assistantRoutes from "./routes/assistant.routes";
 import historyRoutes from "./routes/history.routes";
+import inventoryRoutes from "./routes/inventory.routes";
 
 const app = express();
 
@@ -19,6 +20,13 @@ app.use(
     "/api/history",
     historyRoutes
 );
+
+// Inventory 
+app.use(
+    "/api/inventory",
+    inventoryRoutes
+);
+
 
 app.get("/", (req,res)=>{
 
